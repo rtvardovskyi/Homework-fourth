@@ -13,19 +13,21 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Projects\\Homework-third\\Domain\\Domain.csproj",
+      "projectUniqueName": "D:\\Projects\\Homework-fourth\\Domain\\Domain.csproj",
       "projectName": "Domain",
-      "projectPath": "D:\\Projects\\Homework-third\\Domain\\Domain.csproj",
+      "projectPath": "D:\\Projects\\Homework-fourth\\Domain\\Domain.csproj",
       "packagesPath": "C:\\Users\\romat\\.nuget\\packages\\",
-      "outputPath": "D:\\Projects\\Homework-third\\Domain\\obj\\",
+      "outputPath": "D:\\Projects\\Homework-fourth\\Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\romat\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\romat\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -58,7 +60,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }

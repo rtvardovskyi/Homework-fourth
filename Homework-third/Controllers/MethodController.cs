@@ -17,5 +17,5 @@ public class MethodController : ControllerBase
     public void ForAdminOnly()
     {
         Response.WriteAsync("If seeing this, that means you are admin");
-    }
+    }    
 }
