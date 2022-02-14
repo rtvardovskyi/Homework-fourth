@@ -2,7 +2,7 @@
 
 namespace Domain.Dtos;
 
-public class UserDto
+public class RegisterDto
 {
     public string Username { get; set; } = string.Empty;
     

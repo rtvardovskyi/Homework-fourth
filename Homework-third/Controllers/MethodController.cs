@@ -13,9 +13,9 @@ public class MethodController : ControllerBase
         Response.WriteAsync("This is for all users");
     }
     
-    [HttpGet("Admin"), Authorize(Roles = "Admin")]
+    [HttpGet("Admin"), Authorize(Roles = "Admin, Moderator")]
     public void ForAdminOnly()
     {
-        Response.WriteAsync("If seeing this, that means you are admin");
+        Response.WriteAsync("If you seeing this, this means you are Admin or Moderator");
     }    
 }

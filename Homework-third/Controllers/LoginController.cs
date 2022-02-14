@@ -1,8 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using AutoMapper;
+using BLL.Interfaces;
+using Domain;
 using Domain.Dtos;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,27 +17,43 @@ namespace Homework_third.Controllers;
 [Route("api/[controller]")]
 public class LoginController : ControllerBase
 {
-    public static User user = new User();
+    //public static User user = new User();
 
     private readonly IConfiguration _configuration;
+    private readonly ApplicationContext _context;
+    private readonly IUserService _userService;
+    private readonly IMapper _mapper;
 
-    public LoginController(IConfiguration configuration)
+    public LoginController(IConfiguration configuration, ApplicationContext context, IUserService userService, IMapper mapper)
     {
         _configuration = configuration;
+        _context = context;
+        _userService = userService;
+        _mapper = mapper;
     }
     
     [HttpPost("register")]
-    public ActionResult<User> Register(UserDto request)
+    public ActionResult Register(RegisterDto request)
     {
+        var userFromTable = _userService.GetUserByName(request.Username);
+
+        if (userFromTable != null)
+        {
+            return BadRequest("User already exist");
+        }
+
         CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-        user.Username = request.Username;
-        user.Role = request.Role;
+        var user = _mapper.Map<User>(request);
         user.PasswordHash = passwordHash;
         user.PasswordSalt = passwordSalt;
-
-        return Ok(user);
+        
+        _userService.AddUser(user);
+        _userService.SaveChanges();
+        
+        return Ok("Successfully registered");
     }
+    
 
     private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
@@ -44,9 +65,11 @@ public class LoginController : ControllerBase
     }
 
     [HttpPost("login")]
-    public ActionResult<string> Login(UserDto request)
+    public ActionResult<string> Login(LoginDto request)
     {
-        if (user.Username != request.Username)
+        var user = _userService.GetUserByName(request.Username);
+
+        if (user == null)
         {
             return BadRequest("User not found.");
         }
@@ -58,6 +81,38 @@ public class LoginController : ControllerBase
 
         string token = CreateToken(user);
         return Ok(token);
+    }
+
+    [HttpPatch("{username}"), Authorize(Roles = "Admin")]
+    public ActionResult UpdateRole(string username, JsonPatchDocument<UpdateRoleDto> patchDoc)
+    {
+        if (patchDoc == null)
+        {
+            return BadRequest("Wrong request format");
+        }
+
+        var user = _userService.GetUserByName(username);
+
+        if (user == null)
+        {
+            return BadRequest("User not found");
+        }
+
+        var userToPatch = _mapper.Map<UpdateRoleDto>(user);
+        
+        patchDoc.ApplyTo(userToPatch, ModelState);
+        
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _mapper.Map(userToPatch, user);
+
+        _userService.SaveChanges();
+
+        return NoContent();
+
     }
     
     private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
